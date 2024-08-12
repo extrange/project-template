@@ -1,5 +1,7 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+# Update hooks with `pre-commit autoupdate`
+# Manually run with `pre-commit run --all-files`
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
@@ -10,13 +12,17 @@ repos:
         args: [--unsafe]
       - id: check-added-large-files
       - id: check-case-conflict
-      - id: requirements-txt-fixer
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.5.6
+    rev: v0.5.7
     hooks:
       - id: ruff
       - id: ruff-format
-  # Secret scanning
+  - repo: https://github.com/python-poetry/poetry
+    rev: 1.8.0
+    hooks:
+    -   id: poetry-check
+    -   id: poetry-lock
+    -   id: poetry-install
   - repo: local
     hooks:
       - id: trufflehog
@@ -25,5 +31,10 @@ repos:
         entry: bash -c 'trufflehog git file://. --since-commit HEAD --only-verified --fail --no-update'
         language: system
         stages: ["commit", "push"]
-  # TODO consider linting commit messages for automated release note generation
-  # TODO add pyright (requires venv)
+      - id: pyright
+        name: Pyright
+        description: Type-check with Pyright
+        entry: bash -c 'poetry run pyright'
+        language: system
+        stages: ["commit", "push"]
+        require_serial: true # https://github.com/pre-commit/pre-commit/issues/1466

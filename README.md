@@ -4,7 +4,7 @@ My personal project template, for my Python/TS projects.
 
 With this project template, you get:
 
-- Automated testing on pushes to the main branch (or when PRs are opened)
+- Automated testing on commit and when PRs are opened targeting the main branch
 - `.env` validation via Pydantic Settings
 - Devcontainer features, in particular:
   - Run tests and formatting on commit (via pre-commit)
@@ -14,10 +14,10 @@ With this project template, you get:
 - Python package management with Poetry
 - Pytest
 - [`src/` project layout][src-layout]
+- TODO run tests on commit
 - TODO Code coverage
-- TODO Much stricter ruff checks
 - TODO Dockerfile copy poetry venv
-- TODO run tests/pyright on commit
+- TODO consider linting commit messages for automated release generation
 
 To start using this template, click 'Use this template' on the top right.
 
