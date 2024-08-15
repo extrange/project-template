@@ -66,7 +66,7 @@ WORKDIR $APP_DIR
 COPY . $APP_DIR
 
 # In the venv created by poetry, from PATH
-RUN pytest
+RUN pyright && pytest
 
 #--------------------
 
