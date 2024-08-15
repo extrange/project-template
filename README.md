@@ -4,7 +4,7 @@ My personal project template, for my Python/TS projects.
 
 With this project template, you get:
 
-- Automated testing on commit and when PRs are opened targeting the main branch
+- Automated testing on commit and when PRs are opened targeting the main branch (via pytest)
 - `.env` validation via Pydantic Settings
 - Devcontainer features, in particular:
   - Run tests and formatting on commit (via pre-commit)
@@ -12,15 +12,25 @@ With this project template, you get:
   - Dockerfile linting with Hadolint
   - Non-root user setup
 - Python package management with Poetry
-- Pytest
 - [`src/` project layout][src-layout]
-- TODO run tests on commit
-- TODO Code coverage
-- TODO Dockerfile copy poetry venv
-- TODO consider linting commit messages for automated release generation
+- Production `compose.yml` file
+
+## Getting Started
 
 To start using this template, click 'Use this template' on the top right.
 
+Create a root `env/` folder, and add `local.env` and `prod.env` inside for your local and production environment variables respectively.
+
+Then, open the project in a Devcontainer.
+
+Run your project with `python -m my_project.main`.
+
 If you found this template useful, feel free to contribute back!
+
+## Useful Info
+
+Skip pre-commit hooks:
+
+`git commit --no-verify -m 'my commit'`
 
 [src-layout]: https://docs.pytest.org/en/7.1.x/explanation/goodpractices.html#src-layout
