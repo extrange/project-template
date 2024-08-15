@@ -20,15 +20,3 @@ pytest = "^8.3.2"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.ruff]
-target-version = "py312"
-
-# View rules here: https://docs.astral.sh/ruff/rules/
-[tool.ruff.lint]
-select = ["ALL"]
-ignore = ["D100", "D203", "D211", "D212"]
-
-[tool.ruff.lint.pydocstyle]
-# Use PEP257 docstrings
-convention = "pep257"
