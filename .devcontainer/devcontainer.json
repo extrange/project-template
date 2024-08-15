@@ -48,14 +48,13 @@
 				"github.vscode-github-actions",
 				"ms-azuretools.vscode-docker",
 				"exiasr.hadolint",
-				"tamasfe.even-better-toml"
+				"tamasfe.even-better-toml",
+				"inferrinizzard.prettier-sql-vscode"
 			],
 			"settings": {
 				"python.defaultInterpreterPath": "./.venv/bin/python",
+				"editor.formatOnSave": true,
 				"[python]": {
-					"diffEditor.ignoreTrimWhitespace": false,
-					"editor.formatOnType": true,
-					"editor.wordBasedSuggestions": "off",
 					"editor.defaultFormatter": "charliermarsh.ruff",
 					"editor.codeActionsOnSave": {
 						"source.organizeImports": "always"
