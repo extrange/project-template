@@ -33,4 +33,8 @@ Skip pre-commit hooks:
 
 `git commit --no-verify -m 'my commit'`
 
+## Opinions
+
+Linting: While it is possible to lint every file, in practice simply linting the files that matter is sufficient. We don't want commits or actions to fail simply because of whitespace or format issues.
+
 [src-layout]: https://docs.pytest.org/en/7.1.x/explanation/goodpractices.html#src-layout

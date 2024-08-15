@@ -1,6 +1,8 @@
 # View options here: https://python-poetry.org/docs/configuration
 [tool.poetry]
-name = "my_project"                                                 # Change this to match the directory your project is in
+# Change this to match the directory your project is in
+# Poetry will install your project as an editable package
+name = "my_project"
 version = "0.1"
 description = "Your project description"
 authors = ["extrange <29305375+extrange@users.noreply.github.com>"]
