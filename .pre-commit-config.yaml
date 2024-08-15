@@ -32,10 +32,7 @@ repos:
         entry: bash -c 'trufflehog git file://. --since-commit HEAD --only-verified --fail --no-update'
         language: system
         stages: ["commit", "push"]
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.376
+    hooks:
       - id: pyright
-        name: Pyright
-        description: Type-check with Pyright
-        entry: bash -c 'poetry run pyright'
-        language: system
-        stages: ["commit", "push"]
-        require_serial: true # https://github.com/pre-commit/pre-commit/issues/1466
