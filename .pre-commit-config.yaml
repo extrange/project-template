@@ -13,7 +13,7 @@ repos:
       - id: check-added-large-files
       - id: check-case-conflict
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.7.3
+    rev: v0.7.4
     hooks:
       - id: ruff
         args: [--fix]
@@ -33,6 +33,6 @@ repos:
         language: system
         stages: ["pre-commit", "pre-push"]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.388
+    rev: v1.1.389
     hooks:
       - id: pyright
