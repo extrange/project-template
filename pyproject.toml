@@ -12,7 +12,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 pydantic = "^2.10.3"
-pydantic-settings = "^2.6.1"
+pydantic-settings = "^2.7.0"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
