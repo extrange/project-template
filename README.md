@@ -4,8 +4,9 @@ My personal project template, for my Python/TS projects.
 
 Features:
 
-- Automated testing with coverage via GHA
+- Automated testing (via Dockerfile `test` stage) with coverage report via GHA
 - Linting with Ruff
+- Secret scanning
 - Dockerfile with non-root user
 - [`src/` project layout][src-layout]
 
@@ -28,9 +29,5 @@ If you found this template useful, feel free to contribute back!
 Skip pre-commit hooks:
 
 `git commit --no-verify -m 'my commit'`
-
-## Opinions
-
-Running `test` stage of Dockerfile vs `pytest` directly: I think it's cleaner to run `pytest` directly. Dockerfile test stages should only be reserved for cases where specialized software is required on the host/build hosts (rarely).
 
 [src-layout]: https://docs.pytest.org/en/7.1.x/explanation/goodpractices.html#src-layout
