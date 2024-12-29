@@ -20,23 +20,22 @@ jobs:
       - name: Run linting (Ruff)
         uses: chartboost/ruff-action@e18ae971ccee1b2d7bbef113930f00c670b78da4 # v1
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@180f8b44399608a850e1db031fa65c77746566d3 # v5
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@6524bf65af31da8d45b59e8c27de4bd072b392f5 # v3
+
+      - name: Build the `deployment` target stage of the image
+        uses: docker/build-push-action@48aba3b46d1b1fec4febb7c5d0c644b249a11355 # v6
+        id: docker
         with:
-          version: "latest"
-
-      - name: Set up Python
-        run: uv python install
-
-      - name: Check lockfile
-        run: uv lock --locked
-
-      - name: Install the project
-        run: uv sync --all-extras --dev
+            push: false
+            target: deployment
+            platforms: linux/amd64
+            cache-to: type=gha,mode=max
+            cache-from: type=gha
 
       - name: Run tests
         run: |
           echo '# Code Coverage' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          uv run pytest --cov-report term --cov src >> $GITHUB_STEP_SUMMARY
+          docker run ${{ steps.docker.outputs.imageid }} >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY

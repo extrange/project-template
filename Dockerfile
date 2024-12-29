@@ -34,6 +34,27 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 RUN useradd -ms /bin/bash --user-group -l -u ${CACHE_UID} user
 
 USER user
+#--------------------
+
+FROM base AS test
+
+WORKDIR $APP_DIR
+
+# Install the project's dependencies using the lockfile and settings
+RUN --mount=type=cache,target=$UV_CACHE_DIR,uid=$CACHE_UID,gid=$CACHE_GID \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project
+
+# Then, add the rest of the project source code and install it
+# Installing the project separately from its dependencies allows optimal layer caching
+COPY --chown=user:user pyproject.toml uv.lock src/ tests/ $APP_DIR/
+RUN --mount=type=cache,target=$UV_CACHE_DIR,uid=$CACHE_UID,gid=$CACHE_GID \
+    uv sync --frozen
+
+RUN pyright && pytest
+
+CMD ["uv", "run", "pytest", "--cov-report", "term", "--cov", "my_project"]
 
 #--------------------
 
