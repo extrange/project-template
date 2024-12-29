@@ -1,4 +1,4 @@
-name: Build the deployment stage of the docker image
+name: Build and run tests with coverage
 on:
   pull_request:
     branches: [main]

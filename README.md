@@ -2,26 +2,22 @@
 
 My personal project template, for my Python/TS projects.
 
-With this project template, you get:
+Features:
 
-- Automated testing on commit and when PRs are opened targeting the main branch (via pytest)
-- `.env` validation via Pydantic Settings
-- Devcontainer features, in particular:
-  - Run tests and formatting on commit (via pre-commit)
-  - Python linting with Ruff
-  - Dockerfile linting with Hadolint
-  - Non-root user setup
-- Python package management with Poetry
+- Automated testing with coverage via GHA
+- Linting with Ruff
+- Dockerfile with non-root user
 - [`src/` project layout][src-layout]
-- Production `compose.yml` file
 
 ## Getting Started
+
+You will need to have `uv` installed.
 
 To start using this template, click 'Use this template' on the top right.
 
 Create a root `env/` folder, and add `local.env` and `prod.env` inside for your local and production environment variables respectively.
 
-Then, open the project in a Devcontainer.
+Run `uv sync`.
 
 Run your project with `python -m my_project.main`.
 
@@ -35,6 +31,6 @@ Skip pre-commit hooks:
 
 ## Opinions
 
-Linting: While it is possible to lint every file, in practice simply linting the files that matter is sufficient. We don't want commits or actions to fail simply because of whitespace or format issues.
+Running `test` stage of Dockerfile vs `pytest` directly: I think it's cleaner to run `pytest` directly. Dockerfile test stages should only be reserved for cases where specialized software is required on the host/build hosts (rarely).
 
 [src-layout]: https://docs.pytest.org/en/7.1.x/explanation/goodpractices.html#src-layout
