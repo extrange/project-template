@@ -1,89 +1,56 @@
-FROM python:3.13-slim AS base
+FROM python:3.13-slim@sha256:f41a75c9cee9391c09e0139f7b49d4b1fbb119944ec740ecce4040626dc07bed AS base
 
-# Inherited by all stages
-ENV POETRY_VERSION=1.8.3
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest@sha256:0ac957607303916420297a4c9c213bb33fbd3c888f9cd7f4f7273596ebf42b85 /uv /uvx /bin/
+
+# Inherited by all stages and persisted in the final image
 ENV APP_DIR=/app
 ENV TZ=Asia/Singapore
+ENV PYTHONPATH=$APP_DIR/src
+ENV UV_CACHE_DIR=/home/user/.cache/uv
+ENV PYTHONUNBUFFERED=TRUE
+ENV CACHE_UID=1000
+ENV CACHE_GID=1000
 
+# Speed up container start time https://docs.astral.sh/uv/guides/integration/docker/#compiling-bytecode
+ENV UV_COMPILE_BYTECODE=1
 
+# uv: Don't link packages to the mounted cache on the host (which will not be present in the final image). Instead, copy packages to the container
+ENV UV_LINK_MODE=copy
+
+# Ensure that the `python` command uses the venv
+ENV PATH="$APP_DIR/.venv/bin:$PATH"
+
+# Useful utilities
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN apt-get update && \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && \
     apt-get install -y --no-install-recommends \
-    curl && \
+    curl vim && \
     rm -rf /var/lib/apt/lists/*
 
-#-------------------
+# Run the container as a non-root user
+RUN useradd -ms /bin/bash --user-group -l -u ${CACHE_UID} user
 
-FROM base AS dev
-
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    sqlite3
-
-# trufflehog: secret scanning
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
-
-# Poetry & dependencies are installed in the devcontainer via postCreateCommand
-
-#-------------------
-
-FROM base AS builder
-
-RUN pip install --no-cache-dir poetry=="$POETRY_VERSION"
-
-# These variables will apply to the descendant stage (test) as well
-
-# Poetry
-ENV POETRY_VIRTUALENVS_IN_PROJECT=true \
-    POETRY_VIRTUALENVS_CREATE=1 \
-    POETRY_NO_INTERACTION=1 \
-    POETRY_CACHE_DIR=/tmp/poetry_cache
-
-ENV PATH="$APP_DIR/.venv/bin:$PATH" \
-    PYTHONPATH=$APP_DIR/src \
-    VIRTUAL_ENV=$APP_DIR/.venv
-
-WORKDIR $APP_DIR
-
-COPY poetry.lock pyproject.toml ./
-
-RUN --mount=type=cache,target=${POETRY_CACHE_DIR} \
-    poetry install --without=dev --no-root
-
-#--------------------
-
-# Inherits ENV from builder
-FROM builder AS test
-
-# Install dev dependencies
-RUN --mount=type=cache,target=${POETRY_CACHE_DIR} \
-    poetry install --no-root
-
-WORKDIR $APP_DIR
-
-COPY . $APP_DIR
-
-# In the venv created by poetry, from PATH
-RUN pyright && pytest
+USER user
 
 #--------------------
 
 FROM base AS deployment
 
-ENV PATH="$APP_DIR/.venv/bin:$PATH" \
-    PYTHONPATH=$APP_DIR/src \
-    VIRTUAL_ENV=$APP_DIR/.venv
+WORKDIR ${APP_DIR}
 
-RUN useradd -ms /bin/bash --user-group -u 1000 user
+# Install the project's dependencies using the lockfile and settings
+RUN --mount=type=cache,target=$UV_CACHE_DIR,uid=$CACHE_UID,gid=$CACHE_GID \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project --no-dev
 
-USER user
+# Then, add the rest of the project source code and install it
+# Installing the project separately from its dependencies allows optimal layer caching
+COPY --chown=user:user pyproject.toml uv.lock src/ $APP_DIR/
+RUN --mount=type=cache,target=$UV_CACHE_DIR,uid=$CACHE_UID,gid=$CACHE_GID \
+    uv sync --frozen --no-dev
 
-# Copy virtual environment from builder
-COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
-
-COPY . $APP_DIR
-
-# Change as necessary
 CMD ["python", "-m", "my_project.main"]

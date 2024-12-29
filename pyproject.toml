@@ -1,28 +1,14 @@
 # View options here: https://python-poetry.org/docs/configuration
-[tool.poetry]
-# Change this to match the directory your project is in
-# Poetry will install your project as an editable package
-name = "my_project"
+[project]
+name = "project_template"
 version = "0.1"
-description = "Your project description"
-authors = ["extrange <29305375+extrange@users.noreply.github.com>"]
+description = "Python/TS Project Template"
 readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["pydantic>=2.10.4", "pydantic-settings>=2.7.0"]
 
-
-[tool.poetry.dependencies]
-python = "^3.12"
-pydantic = "^2.10.4"
-pydantic-settings = "^2.7.0"
-
-[tool.poetry.group.dev.dependencies]
-ipykernel = "^6.29.5"
-pyright = "^1.1.391"
-ruff = "^0.8.4"
-pytest = "^8.3.4"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.uv]
+package = true
 
 [tool.pyright]
 # pre-commit: make pyright use the venv
@@ -32,3 +18,14 @@ venv = ".venv"
 [tool.pytest.ini_options]
 # https://docs.pytest.org/en/latest/explanation/goodpractices.html#which-import-mode
 addopts = ["--import-mode=importlib"]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+    "pyright>=1.1.391",
+    "pytest>=8.3.4",
+    "pytest-env>=1.1.5",
+    "ruff>=0.8.4",
+    "pytest-cov>=6.0.0",
+    "coverage>=7.6.10",
+]
